@@ -1,0 +1,72 @@
+/**
+ * Mock data for luxury properties in Cameroon.
+ * Used as a fallback when the real API is empty to demonstrate the UI capacity.
+ */
+export const MOCK_PROPERTIES = [
+  {
+    id: 'mock-1',
+    title: 'The Bastos Residence',
+    price: 650000,
+    category: 'for-rent',
+    status: 'verified',
+    location: { city: 'Yaoundé', quarter: 'Bastos' },
+    specifications: { bedrooms: 4, bathrooms: 5, area: 420 },
+    advantages: ['Smart Security', 'Guest Wing', 'Mountain View'],
+    images: ['https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1000&auto=format&fit=crop'],
+  },
+  {
+    id: 'mock-2',
+    title: 'Bonapriso Sky-Villa',
+    price: 150000000,
+    category: 'for-sale',
+    status: 'verified',
+    location: { city: 'Douala', quarter: 'Bonapriso' },
+    specifications: { bedrooms: 3, bathrooms: 3, area: 280 },
+    advantages: ['Infinity Pool', 'Helipad Access', 'Port View'],
+    images: ['https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=1000&auto=format&fit=crop'],
+  },
+  {
+    id: 'mock-3',
+    title: 'Kribi Ocean Front',
+    price: 45000,
+    category: 'for-rent',
+    status: 'verified',
+    location: { city: 'Kribi', quarter: 'Ngali II' },
+    specifications: { bedrooms: 2, bathrooms: 2, area: 110 },
+    advantages: ['Private Beach', 'Solar Tech', 'Fishing Deck'],
+    images: ['https://images.unsplash.com/photo-1621293954908-907159237fc5?q=80&w=1000&auto=format&fit=crop'],
+  },
+  {
+    id: 'mock-4',
+    title: 'Santa Barbara Estate',
+    price: 250000000,
+    category: 'for-sale',
+    status: 'verified',
+    location: { city: 'Yaoundé', quarter: 'Santa Barbara' },
+    specifications: { bedrooms: 5, bathrooms: 6, area: 600 },
+    advantages: ['Gated Community', 'Tennis Court', 'Wine Cellar'],
+    images: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1000&auto=format&fit=crop'],
+  },
+  {
+    id: 'mock-5',
+    title: 'Executive Loft Douala',
+    price: 350000,
+    category: 'for-rent',
+    status: 'verified',
+    location: { city: 'Douala', quarter: 'Akwa' },
+    specifications: { bedrooms: 2, bathrooms: 2, area: 150 },
+    advantages: ['City Skyline', 'High Ceilings', 'Garage'],
+    images: ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1000&auto=format&fit=crop'],
+  },
+  {
+    id: 'mock-6',
+    title: 'Mount Fako View Villa',
+    price: 180000,
+    category: 'for-rent',
+    status: 'verified',
+    location: { city: 'Buea', quarter: 'Muea' },
+    specifications: { bedrooms: 3, bathrooms: 2, area: 200 },
+    advantages: ['Mountain Breeze', 'Modern Kitchen', 'Stable Water'],
+    images: ['https://images.unsplash.com/photo-1599809275671-b5941cabc7a5?q=80&w=1000&auto=format&fit=crop'],
+  }
+];
