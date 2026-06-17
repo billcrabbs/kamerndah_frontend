@@ -6,190 +6,256 @@ import { motion } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectIsAuthenticated } from '@/store/slices/authSlice';
 import { showModal } from '@/store/slices/uiSlice';
-import { 
- signInWithEmailAndPassword, 
- signInWithPopup, 
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
-import { 
- Mail, 
- Lock, 
- ArrowRight, 
- Chrome, 
- Sparkles,
- AlertCircle
+import {
+  Mail,
+  Lock,
+  ArrowRight,
+  AlertCircle,
+  ShieldCheck,
 } from 'lucide-react';
 
+/* ── Friendly Firebase error map ─────────────────────────────────── */
+const FIREBASE_ERRORS = {
+  'auth/invalid-email':          'Please enter a valid email address.',
+  'auth/user-not-found':         'No account found with this email.',
+  'auth/wrong-password':         'Incorrect password. Please try again.',
+  'auth/invalid-credential':     'Incorrect email or password.',
+  'auth/too-many-requests':      'Too many attempts. Please wait a moment and try again.',
+  'auth/user-disabled':          'This account has been disabled. Contact support.',
+  'auth/network-request-failed': 'Network error. Check your connection and retry.',
+};
+
+function friendlyError(err) {
+  for (const [code, msg] of Object.entries(FIREBASE_ERRORS)) {
+    if (err?.code === code || err?.message?.includes(code)) return msg;
+  }
+  return 'Something went wrong. Please try again.';
+}
+
+/* ── Google SVG icon ─────────────────────────────────────────────── */
+function GoogleIcon() {
+  return (
+    <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+    </svg>
+  );
+}
+
 export default function LoginPage() {
-  const router = useRouter();
-  const dispatch = useDispatch();
+  const router     = useRouter();
+  const dispatch   = useDispatch();
   const isAuthenticated = useSelector(selectIsAuthenticated);
- 
- const [email, setEmail] = useState('');
- const [password, setPassword] = useState('');
- const [error, setError] = useState('');
- const [isLoading, setIsLoading] = useState(false);
 
- useEffect(() => {
-   if (isAuthenticated) {
-     router.push('/');
-   }
- }, [isAuthenticated, router]);
+  const [email,     setEmail]     = useState('');
+  const [password,  setPassword]  = useState('');
+  const [error,     setError]     = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
- const handleEmailLogin = async (e) => {
- e.preventDefault();
- setIsLoading(true);
- setError('');
- 
- try {
-   await signInWithEmailAndPassword(auth, email, password);
-   dispatch(showModal({
-     type: 'success',
-     title: 'Connection Established',
-     message: 'Welcome back to KamerNdah. Your session has been secured.',
-     actionText: 'Enter Dashboard',
-     redirect: '/dashboard'
-   }));
- } catch (err) {
-   const errorMsg = err.message.replace('Firebase:', '');
-   setError(errorMsg);
-   dispatch(showModal({
-     type: 'error',
-     title: 'Access Denied',
-     message: errorMsg,
-     actionText: 'Retry'
-   }));
- } finally {
- setIsLoading(false);
- }
- };
+  useEffect(() => {
+    if (isAuthenticated) router.push('/');
+  }, [isAuthenticated, router]);
 
- const handleGoogleLogin = async () => {
- setIsLoading(true);
- setError('');
- try {
- await signInWithPopup(auth, googleProvider);
- router.push('/');
- } catch (err) {
- setError(err.message.replace('Firebase:', ''));
- } finally {
- setIsLoading(false);
- }
- };
+  /* ── Email / password login ────────────────────────────────────── */
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      dispatch(showModal({
+        type:       'success',
+        title:      'Welcome Back',
+        message:    'You\'re now signed in to KamerNdah.',
+        actionText: 'Go to Dashboard',
+        redirect:   '/dashboard',
+      }));
+    } catch (err) {
+      const msg = friendlyError(err);
+      setError(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
- return (
- <div className="min-h-screen pt-20 flex bg-[#08080a]">
- {/* Background pattern */}
- <div className="absolute inset-0 pattern-afro opacity-[0.03] pointer-events-none" />
+  /* ── Google login ──────────────────────────────────────────────── */
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      await signInWithPopup(auth, googleProvider);
+      router.push('/');
+    } catch (err) {
+      setError(friendlyError(err));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
- <div className="max-w-6xl mx-auto w-full px-6 flex items-center justify-center">
- <motion.div 
- initial={{ opacity: 0, y: 40 }}
- animate={{ opacity: 1, y: 0 }}
- className="w-full max-w-md space-y-12"
- >
- {/* Branding Header */}
- <div className="text-center space-y-4">
- <div className="inline-flex items-center space-x-3 bg-white/5 border border-white/10 px-5 py-2.5 rounded-full">
- <Sparkles className="w-4 h-4 text-primary" />
- <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Secure Access Portal</span>
- </div>
- <h1 className="text-5xl lg:text-6xl font-black text-white leading-tight tracking-tighter uppercase ">
- Welcome <br />
- <span className="text-gradient-gold">Back.</span>
- </h1>
- </div>
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      {/* ── Decorative top accent ─────────────────────────────────── */}
+      <div className="h-1.5 w-full bg-gradient-to-r from-primary via-primary-light to-secondary" />
 
- {/* Error Message */}
- {error && (
- <motion.div 
- initial={{ opacity: 0, x: -10 }}
- animate={{ opacity: 1, x: 0 }}
- className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-2xl flex items-center space-x-3 text-sm font-bold"
- >
- <AlertCircle className="w-5 h-5 flex-shrink-0" />
- <span>{error}</span>
- </motion.div>
- )}
+      <div className="flex-1 flex items-center justify-center px-4 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-md"
+        >
+          {/* ── Card ───────────────────────────────────────────────── */}
+          <div className="bg-white rounded-3xl border border-border shadow-xl shadow-slate-200/60 p-8 sm:p-10 space-y-8">
 
- {/* Form */}
- <form onSubmit={handleEmailLogin} className="space-y-6">
- <div className="space-y-4">
- <div className="relative group">
- <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-primary transition-colors" />
- <input 
- type="email" 
- placeholder="Email Address"
- value={email}
- onChange={(e) => setEmail(e.target.value)}
- required
- className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-16 pr-6 text-white font-bold placeholder:text-gray-600 focus:outline-none focus:border-primary/50 transition-all"
- />
- </div>
+            {/* Brand */}
+            <div className="text-center space-y-2">
+              <Link href="/" className="inline-flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 bg-navy rounded-xl flex items-center justify-center">
+                  <span className="text-white font-black text-base">K</span>
+                </div>
+                <span className="text-[18px] font-black tracking-tight text-navy">
+                  Kamer<span className="text-primary">Ndah</span>
+                </span>
+              </Link>
+              <h1 className="text-3xl font-black text-navy tracking-tight">Welcome back</h1>
+              <p className="text-sm text-slate-500">Sign in to your KamerNdah account</p>
+            </div>
 
- <div className="relative group">
- <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-primary transition-colors" />
- <input 
- type="password" 
- placeholder="Security Password"
- value={password}
- onChange={(e) => setPassword(e.target.value)}
- required
- className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-16 pr-6 text-white font-bold placeholder:text-gray-600 focus:outline-none focus:border-primary/50 transition-all"
- />
- </div>
- </div>
+            {/* Error */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl text-sm"
+              >
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </motion.div>
+            )}
 
- <div className="flex items-center justify-between text-xs font-black uppercase tracking-widest px-2">
- <label className="flex items-center space-x-2 text-gray-500 cursor-pointer">
- <input type="checkbox" className="accent-primary" />
- <span>Remember Me</span>
- </label>
- <Link href="/forgot-password" title="Recover Password" className="text-primary-light hover:text-white transition-colors">Recover Access</Link>
- </div>
+            {/* Form */}
+            <form onSubmit={handleEmailLogin} className="space-y-5">
+              {/* Email */}
+              <div className="space-y-1.5">
+                <label htmlFor="login-email" className="block text-xs font-bold text-slate-600 uppercase tracking-wider">
+                  Email Address
+                </label>
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                  <input
+                    id="login-email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full bg-slate-50 border border-border hover:border-slate-300 focus:border-primary rounded-xl py-3.5 pl-12 pr-4 text-navy font-semibold text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-all"
+                  />
+                </div>
+              </div>
 
- <button 
- type="submit"
- disabled={isLoading}
- className="w-full bg-primary hover:bg-primary-dark text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all emerald-glow flex items-center justify-center space-x-3 disabled:opacity-50"
- >
- {isLoading ? (
- <span className="animate-pulse">Verifying Identity...</span>
- ) : (
- <>
- <span>Establish Connection</span>
- <ArrowRight className="w-4 h-4" />
- </>
- )}
- </button>
- </form>
+              {/* Password */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="login-password" className="block text-xs font-bold text-slate-600 uppercase tracking-wider">
+                    Password
+                  </label>
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs font-semibold text-primary hover:text-primary-dark transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                  <input
+                    id="login-password"
+                    type="password"
+                    placeholder="Your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full bg-slate-50 border border-border hover:border-slate-300 focus:border-primary rounded-xl py-3.5 pl-12 pr-4 text-navy font-semibold text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-all"
+                  />
+                </div>
+              </div>
 
- {/* Divider */}
- <div className="relative">
- <div className="absolute inset-0 flex items-center">
- <div className="w-full border-t border-white/5"></div>
- </div>
- <div className="relative flex justify-center text-xs font-black uppercase tracking-widest">
- <span className="px-4 bg-[#08080a] text-gray-600">Or Continue With</span>
- </div>
- </div>
+              {/* Remember me */}
+              <label className="flex items-center gap-2.5 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 accent-primary rounded cursor-pointer"
+                />
+                <span className="text-sm text-slate-500 group-hover:text-slate-700 transition-colors">
+                  Remember me on this device
+                </span>
+              </label>
 
- {/* Social */}
- <button 
- onClick={handleGoogleLogin}
- type="button"
- className="w-full bg-white text-black py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all hover:bg-gray-200 flex items-center justify-center space-x-3"
- >
- <Chrome className="w-5 h-5 text-red-500" />
- <span>Google Passport</span>
- </button>
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-primary hover:bg-primary-dark disabled:opacity-60 disabled:cursor-not-allowed text-white py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all hover:shadow-lg hover:shadow-primary/25 flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <span className="animate-pulse">Signing you in…</span>
+                ) : (
+                  <>
+                    <span>Sign In</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
 
- {/* Footer */}
- <p className="text-center text-gray-500 font-bold text-sm">
- New to KamerNdah? <Link href="/register" className="text-white hover:text-primary-light transition-colors">Request Membership</Link>
- </p>
- </motion.div>
- </div>
- </div>
- );
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="px-4 bg-white text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  or continue with
+                </span>
+              </div>
+            </div>
+
+            {/* Google */}
+            <button
+              onClick={handleGoogleLogin}
+              type="button"
+              disabled={isLoading}
+              className="w-full flex items-center justify-center gap-3 bg-white border border-border hover:border-slate-300 hover:bg-slate-50 text-navy py-3.5 rounded-xl font-semibold text-sm transition-all disabled:opacity-60"
+            >
+              <GoogleIcon />
+              <span>Continue with Google</span>
+            </button>
+
+            {/* Footer */}
+            <p className="text-center text-sm text-slate-500">
+              Don&apos;t have an account?{' '}
+              <Link href="/register" className="font-bold text-primary hover:text-primary-dark transition-colors">
+                Create one free
+              </Link>
+            </p>
+          </div>
+
+          {/* Trust strip */}
+          <div className="flex items-center justify-center gap-2 mt-6 text-xs text-slate-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+            <span>Secured with Firebase Authentication</span>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
 }

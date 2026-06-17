@@ -181,7 +181,18 @@ export default function UserVisitsPage() {
  </h3>
  <div className="flex items-center text-gray-500 font-bold text-sm">
  <MapPin className="w-4 h-4 mr-2 text-primary" />
- {visit.property_data?.location?.quarter}, {visit.property_data?.location?.city}
+ {(() => {
+   const loc = visit.property_data?.location;
+   if (!loc) return visit.property_data?.city || 'Cameroon';
+   if (typeof loc === 'object') {
+     const parts = [];
+     if (loc.quarter) parts.push(loc.quarter);
+     if (loc.city) parts.push(loc.city);
+     if (parts.length === 0 && loc.address) parts.push(loc.address);
+     return parts.join(', ') || 'Cameroon';
+   }
+   return loc;
+ })()}
  </div>
  </div>
 

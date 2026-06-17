@@ -57,32 +57,32 @@ export default function RentPage() {
  <motion.div 
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
- className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/5 pb-8 gap-6"
+ className="flex flex-col md:flex-row md:items-end justify-between border-b border-border pb-8 gap-6"
  >
  <div className="max-w-2xl">
- <div className="inline-flex items-center space-x-3 bg-white/5 border border-white/10 px-5 py-2.5 rounded-full mb-6">
+ <div className="inline-flex items-center space-x-3 bg-slate-50 border border-border px-5 py-2.5 rounded-full mb-6">
  <span className="relative flex h-2 w-2">
  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
  </span>
- <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Premium Leasing</span>
+ <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Premium Leasing</span>
  </div>
  
- <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase mb-4 leading-none">
- Residences <span className="text-primary-light">For Rent</span>
+ <h1 className="text-4xl md:text-6xl font-black text-navy tracking-tighter uppercase mb-4 leading-none">
+ Residences <span className="text-primary">For Rent</span>
  </h1>
- <p className="text-gray-400 font-medium text-lg leading-relaxed">
+ <p className="text-slate-500 font-medium text-lg leading-relaxed">
  Discover unparalleled rental homes across Cameroon. Fully verified, meticulously curated.
  </p>
  </div>
  
- <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-md">
- <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1">Market Scope</p>
- <p className="text-white font-bold">
- <span className="text-2xl text-primary-light mr-2">{displayProperties.length}</span>
+ <div className="bg-slate-50 border border-border rounded-2xl px-6 py-4">
+ <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Market Scope</p>
+ <p className="text-navy font-bold">
+ <span className="text-2xl text-primary mr-2">{displayProperties.length}</span>
  Estates Found
  {getActiveFilterCount() > 0 && (
- <span className="text-gray-400 text-sm ml-2 font-normal">
+ <span className="text-slate-500 text-sm ml-2 font-normal">
  ({getActiveFilterCount()} filter{getActiveFilterCount() > 1 ? 's' : ''} applied)
  </span>
  )}

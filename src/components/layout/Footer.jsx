@@ -1,85 +1,134 @@
 import Link from 'next/link';
-import { 
- Instagram, 
- Twitter, 
- Linkedin, 
- Facebook, 
- Mail, 
- Phone, 
- MapPin,
- ShieldCheck,
- Award,
- Zap
-} from 'lucide-react';
+import { Instagram, Twitter, Linkedin, Facebook, Mail, Phone, MapPin, ShieldCheck } from 'lucide-react';
+
+const sections = [
+  {
+    title: 'Browse',
+    links: [
+      { name: 'Verified Rentals',         href: '/rent' },
+      { name: 'Properties For Sale',       href: '/buy' },
+      { name: 'Commercial & Real Estate',  href: '/real-estate' },
+      { name: 'Guest Houses & Stays',      href: '/guest-houses' },
+    ],
+  },
+  {
+    title: 'Account',
+    links: [
+      { name: 'Sign In',              href: '/login' },
+      { name: 'Create Free Account',  href: '/register' },
+      { name: 'Submit Your Property', href: '/submit-property' },
+      { name: 'Member Dashboard',     href: '/dashboard' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { name: 'About KamerNdah',           href: '/about' },
+      { name: 'How Verification Works',    href: '/about' },
+      { name: 'For Landlords & Agents',    href: '/submit-property' },
+      { name: 'Privacy Policy',            href: '/privacy-policy' },
+      { name: 'Terms of Use',              href: '/terms' },
+    ],
+  },
+];
+
+const socials = [
+  { Icon: Instagram, href: 'https://instagram.com/kamerndah', label: 'Instagram' },
+  { Icon: Twitter,   href: 'https://twitter.com/kamerndah',   label: 'Twitter/X' },
+  { Icon: Linkedin,  href: 'https://linkedin.com/company/kamerndah', label: 'LinkedIn' },
+  { Icon: Facebook,  href: 'https://facebook.com/kamerndah',  label: 'Facebook' },
+];
 
 export function Footer() {
- const currentYear = new Date().getFullYear();
-
- const sections = [
-    {
-      title: 'Marketplace',
-      links: [
-        { name: 'Verified Rentals', href: '/rent' },
-        { name: 'Investment & Buy', href: '/buy' },
-        { name: 'Commercial Spaces', href: '/real-estate' },
-        { name: 'Premium Guest Stays', href: '/guest-houses' },
-      ]
-    },
-    {
-      title: 'Client Portals',
-      links: [
-        { name: 'Identity Portal', href: '/login' },
-        { name: 'Create Free Account', href: '/register' },
-        { name: 'Submit Your Estate', href: '/submit-property' },
-        { name: 'Member Dashboard', href: '/dashboard' },
-      ]
-    }
-  ];
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-[#08080a] pt-24 pb-12 overflow-hidden border-t border-white/5">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 pattern-afro opacity-[0.03] z-0" />
-      
-      <div className="relative z-10 main-container">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8 border-b border-white/5 pb-20">
-          
-          {/* Column 1: Brand & Promise (2 Columns wide) */}
-          <div className="lg:col-span-2 space-y-8">
-            <Link href="/" className="flex flex-col group">
-              <span className="text-3xl font-black tracking-tighter text-white uppercase transition-all group-hover:text-primary-light">
-                Kamer<span className="text-primary-light">Ndah</span>
-              </span>
-              <span className="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-bold mt-1">
-                Luxury Estate Network
-              </span>
+    <footer className="bg-navy text-white" role="contentinfo">
+
+      {/* ── MAIN FOOTER BODY ──────────────────────────────────────── */}
+      <div className="container-wide py-14 lg:py-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8">
+
+          {/* ── Brand column (spans 2 on large) ────────────────────── */}
+          <div className="sm:col-span-2 space-y-7">
+
+            {/* Logo */}
+            <Link href="/" className="inline-flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-primary group-hover:bg-primary-dark rounded-xl flex items-center justify-center transition-colors duration-200 flex-shrink-0">
+                <span className="text-white font-black text-base leading-none">K</span>
+              </div>
+              <div className="leading-tight">
+                <p className="text-[18px] font-black tracking-tight text-white leading-none">
+                  Kamer<span className="text-primary-light">Ndah</span>
+                </p>
+                <p className="text-[8.5px] uppercase tracking-[0.28em] text-white/35 font-semibold mt-0.5">
+                  Verified Properties
+                </p>
+              </div>
             </Link>
-            
-            <p className="text-gray-500 text-sm leading-relaxed max-w-sm">
-              The premier ecosystem connecting elite landlords with discerning residents across Cameroon. 100% physically verified properties. 0% compromise on quality.
+
+            <p className="text-white/55 text-sm leading-relaxed max-w-[280px]">
+              Cameroon&apos;s most trusted property marketplace. Every listing is physically
+              inspected by our team before going live — rent or buy with full confidence.
             </p>
 
-            <div className="flex space-x-4">
-              {[Instagram, Twitter, Linkedin, Facebook].map((Icon, i) => (
-                <Link key={i} href="#" className="p-3 bg-white/5 rounded-2xl border border-white/10 text-gray-400 hover:text-primary-light hover:border-primary/30 transition-all duration-350 hover:-translate-y-1">
-                  <Icon className="w-5 h-5" />
-                </Link>
+            {/* Contact info */}
+            <div className="space-y-3.5">
+              <a
+                href="tel:+237672676029"
+                className="flex items-center gap-3 text-[13px] text-white/60 hover:text-white transition-colors group"
+              >
+                <div className="w-8 h-8 bg-white/10 group-hover:bg-primary rounded-lg flex items-center justify-center transition-colors flex-shrink-0">
+                  <Phone className="w-3.5 h-3.5" />
+                </div>
+                +237 672 676 029
+              </a>
+              <a
+                href="mailto:support@kamerndah.com"
+                className="flex items-center gap-3 text-[13px] text-white/60 hover:text-white transition-colors group"
+              >
+                <div className="w-8 h-8 bg-white/10 group-hover:bg-primary rounded-lg flex items-center justify-center transition-colors flex-shrink-0">
+                  <Mail className="w-3.5 h-3.5" />
+                </div>
+                support@kamerndah.com
+              </a>
+              <div className="flex items-center gap-3 text-[13px] text-white/50">
+                <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-3.5 h-3.5" />
+                </div>
+                Bastos, Yaoundé, Cameroon
+              </div>
+            </div>
+
+            {/* Socials */}
+            <div className="flex gap-2.5">
+              {socials.map(({ Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 bg-white/10 hover:bg-primary rounded-lg flex items-center justify-center transition-colors duration-200"
+                >
+                  <Icon className="w-4 h-4" />
+                </a>
               ))}
             </div>
           </div>
 
-          {/* Column 2 & 3: Sections mapping (2 Columns wide in total) */}
+          {/* ── Link columns ────────────────────────────────────────── */}
           {sections.map((section) => (
-            <div key={section.title} className="space-y-6 lg:col-span-1">
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">
+            <div key={section.title} className="space-y-5">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/35">
                 {section.title}
               </h3>
-              <ul className="space-y-4">
+              <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="text-sm font-medium text-gray-500 hover:text-white transition-colors duration-300"
+                      className="text-[13px] text-white/60 hover:text-white transition-colors duration-150 leading-snug block"
                     >
                       {link.name}
                     </Link>
@@ -88,71 +137,22 @@ export function Footer() {
               </ul>
             </div>
           ))}
-
-          {/* Column 4: Premium Concierge visual card (2 Columns wide) */}
-          <div className="lg:col-span-2 space-y-6">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">
-              Elite Concierge
-            </h3>
-            <div className="bg-white/[0.02] border border-white/5 p-6 rounded-3xl space-y-4 hover:border-primary/20 transition-all duration-300">
-              <div className="flex items-center space-x-3 group/item">
-                <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center text-primary-light group-hover/item:bg-primary group-hover/item:text-white transition-all">
-                  <Phone className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-[9px] uppercase tracking-wider text-gray-500 font-bold">Direct Hotline</p>
-                  <Link href="tel:+237672676029" className="text-xs font-bold text-white hover:text-primary-light transition-colors">
-                    +237 672 676 029
-                  </Link>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 group/item">
-                <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center text-primary-light group-hover/item:bg-primary group-hover/item:text-white transition-all">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-[9px] uppercase tracking-wider text-gray-500 font-bold">Email Concierge</p>
-                  <Link href="mailto:support@kamerndah.com" className="text-xs font-bold text-white hover:text-primary-light transition-colors">
-                    support@kamerndah.com
-                  </Link>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 group/item">
-                <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center text-primary-light group-hover/item:bg-primary group-hover/item:text-white transition-all">
-                  <MapPin className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-[9px] uppercase tracking-wider text-gray-500 font-bold">Headquarters</p>
-                  <p className="text-xs font-bold text-white">Bastos, Yaoundé, CM</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
+      </div>
 
-        {/* Final Bottom Bar */}
-        <div className="pt-12 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
-          <div className="flex items-center space-x-8 text-[11px] font-bold uppercase tracking-widest text-gray-600">
-            <p>© {currentYear} KamerNdah.</p>
-            <div className="flex items-center space-x-2">
-              <ShieldCheck className="w-4 h-4 text-primary" />
-              <span>Verified Identity Network</span>
-            </div>
+      {/* ── BOTTOM BAR ─────────────────────────────────────────────── */}
+      <div className="border-t border-white/10">
+        <div className="container-wide py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-[12px] text-white/35">
+            <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+            <span>© {year} KamerNdah. All rights reserved.</span>
           </div>
-          
-          <div className="flex items-center space-x-12">
-            <div className="flex items-center space-x-2 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
-              <Award className="w-5 h-5 text-blue-400" />
-              <span className="text-[10px] font-black uppercase text-white tracking-widest">Fintech Approved</span>
-            </div>
-            <div className="flex items-center space-x-2 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
-              <Zap className="w-5 h-5 text-secondary" />
-              <span className="text-[10px] font-black uppercase text-white tracking-widest">Instant Booking</span>
-            </div>
+          <div className="flex items-center gap-5 text-[12px] text-white/35">
+            <Link href="/terms" className="hover:text-white/70 transition-colors">Terms of Use</Link>
+            <Link href="/privacy-policy" className="hover:text-white/70 transition-colors">Privacy Policy</Link>
+            <Link href="/about" className="hover:text-white/70 transition-colors">About Us</Link>
           </div>
         </div>
-
       </div>
     </footer>
   );

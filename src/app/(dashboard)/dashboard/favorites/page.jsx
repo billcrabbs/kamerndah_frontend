@@ -106,7 +106,20 @@ export default function FavoritesPage() {
                         </h3>
                         <div className="flex items-center text-gray-500 text-xs mt-1">
                           <MapPin className="w-3 h-3 mr-1 text-primary" />
-                          <span>{p.location?.quarter}, {p.location?.city || 'Cameroon'}</span>
+                          <span>
+                            {(() => {
+                              const loc = p.location;
+                              if (!loc) return p.city || 'Cameroon';
+                              if (typeof loc === 'object') {
+                                const parts = [];
+                                if (loc.quarter) parts.push(loc.quarter);
+                                if (loc.city) parts.push(loc.city);
+                                if (parts.length === 0 && loc.address) parts.push(loc.address);
+                                return parts.join(', ') || 'Cameroon';
+                              }
+                              return loc;
+                            })()}
+                          </span>
                         </div>
                       </div>
                       <div className="text-right flex-shrink-0">

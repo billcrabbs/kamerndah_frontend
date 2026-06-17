@@ -44,81 +44,81 @@ export default function PropertyDetailPage() {
  const backLink = property?.category === 'for-sale' ? '/buy' : '/rent';
 
  return (
- <main className="min-h-screen bg-[#08080a] pb-32">
- {/* Dynamic Header / Breadcrumbs */}
- <div className="relative h-20 bg-background/80 backdrop-blur-xl border-b border-white/5 z-50">
- <div className="main-container h-full flex items-center justify-between">
- <Link 
- href={backLink} 
- className="flex items-center space-x-3 text-gray-400 hover:text-white transition-all group"
- >
- <div className="p-2 bg-white/5 rounded-xl group-hover:bg-primary transition-all">
- <ArrowLeft className="w-4 h-4" />
- </div>
- <span className="text-xs font-black uppercase tracking-widest">Explore {property?.category?.replace('-', ' ') || 'Properties'}</span>
- </Link>
+  <main className="min-h-screen bg-background pb-32">
+  {/* Dynamic Header / Breadcrumbs */}
+  <div className="relative h-20 bg-white border-b border-border z-50">
+  <div className="main-container h-full flex items-center justify-between">
+  <Link 
+  href={backLink} 
+  className="flex items-center space-x-3 text-slate-500 hover:text-navy transition-all group"
+  >
+  <div className="p-2 bg-slate-50 border border-border rounded-xl group-hover:bg-primary group-hover:text-white transition-all">
+  <ArrowLeft className="w-4 h-4" />
+  </div>
+  <span className="text-xs font-black uppercase tracking-widest">Explore {property?.category?.replace('-', ' ') || 'Properties'}</span>
+  </Link>
+  
+  <div className="flex items-center space-x-4">
+  <button className="p-3 bg-slate-50 rounded-2xl border border-border hover:bg-slate-100 transition-all text-slate-400 hover:text-navy group">
+  <Share2 className="w-5 h-5 transition-transform group-hover:scale-110" />
+  </button>
+  <button 
+  onClick={() => {
+  // Future: Handle favorite toggle from here too if needed
+  }}
+  className="p-3 bg-slate-50 rounded-2xl border border-border text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all group"
+  >
+  <Heart className="w-5 h-5 transition-transform group-hover:scale-110" />
+  </button>
+  </div>
+  </div>
+  </div>
  
- <div className="flex items-center space-x-4">
- <button className="p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-all text-white/50 hover:text-white group">
- <Share2 className="w-5 h-5 transition-transform group-hover:scale-110" />
- </button>
- <button 
- onClick={() => {
- // Future: Handle favorite toggle from here too if needed
- }}
- className="p-3 bg-white/5 rounded-2xl border border-white/5 hover:text-red-500 hover:bg-red-500/10 transition-all group"
- >
- <Heart className="w-5 h-5 transition-transform group-hover:scale-110" />
- </button>
- </div>
- </div>
- </div>
-
- {/* Hero Gallery Section */}
- <section className="pt-12">
- <div className="main-container">
- <PropertyGallery property={property} />
- </div>
- </section>
-
- {/* Main Content Grid */}
- <section className="mt-12">
- <div className="main-container">
- <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+  {/* Hero Gallery Section */}
+  <section className="pt-12">
+  <div className="main-container">
+  <PropertyGallery property={property} />
+  </div>
+  </section>
  
- {/* Left: Detailed Info */}
- <div className="lg:col-span-8 space-y-12">
- <PropertyInfo property={property} />
+  {/* Main Content Grid */}
+  <section className="mt-12">
+  <div className="main-container">
+  <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+  
+  {/* Left: Detailed Info */}
+  <div className="lg:col-span-8 space-y-12">
+  <PropertyInfo property={property} />
+  
+  {/* Luxury Map Placeholder */}
+  <div className="bg-white border border-border rounded-[3rem] p-12 relative overflow-hidden group premium-shadow">
+  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+  <div className="relative z-10 flex flex-col items-center text-center space-y-6">
+  <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20">
+  <Sparkles className="w-8 h-8 text-primary" />
+  </div>
+  <div className="space-y-2">
+  <h3 className="text-2xl font-black text-navy tracking-tighter uppercase">Geographic Precision</h3>
+  <p className="text-slate-500 font-medium max-w-sm">Interactive neighborhood heatmaps and landmark proximity arriving shortly.</p>
+  </div>
+  </div>
+  </div>
+  </div>
  
- {/* Luxury Map Placeholder */}
- <div className="bg-white/5 border border-white/5 rounded-[3rem] p-12 relative overflow-hidden group">
- <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
- <div className="relative z-10 flex flex-col items-center text-center space-y-6">
- <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20">
- <Sparkles className="w-8 h-8 text-primary-light" />
- </div>
- <div className="space-y-2">
- <h3 className="text-2xl font-black text-white tracking-tighter uppercase">Geographic Precision</h3>
- <p className="text-gray-500 font-medium max-w-sm">Interactive neighborhood heatmaps and landmark proximity arriving shortly.</p>
- </div>
- </div>
- </div>
- </div>
-
- {/* Right: Actions Sidebar (Sticky) */}
- <div className="lg:col-span-4">
- <div className="sticky top-32">
- <PropertyActionSidebar 
- property={property} 
- onScheduleVisit={() => setIsVisitModalOpen(true)}
- onBookNow={() => setIsBookingModalOpen(true)}
- />
- </div>
- </div>
-
- </div>
- </div>
- </section>
+  {/* Right: Actions Sidebar (Sticky) */}
+  <div className="lg:col-span-4">
+  <div className="sticky top-32">
+  <PropertyActionSidebar 
+  property={property} 
+  onScheduleVisit={() => setIsVisitModalOpen(true)}
+  onBookNow={() => setIsBookingModalOpen(true)}
+  />
+  </div>
+  </div>
+ 
+  </div>
+  </div>
+  </section>
 
  <VisitScheduleModal 
  property={property} 

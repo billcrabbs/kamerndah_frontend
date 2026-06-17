@@ -64,32 +64,32 @@ export default function BuyPage() {
  <motion.div 
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
- className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/5 pb-8 gap-6"
+ className="flex flex-col md:flex-row md:items-end justify-between border-b border-border pb-8 gap-6"
  >
  <div className="max-w-2xl">
- <div className="inline-flex items-center space-x-3 bg-white/5 border border-white/10 px-5 py-2.5 rounded-full mb-6">
+ <div className="inline-flex items-center space-x-3 bg-slate-50 border border-border px-5 py-2.5 rounded-full mb-6">
  <span className="relative flex h-2 w-2">
  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
  <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
  </span>
- <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Elite Acquisitions</span>
+ <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Elite Acquisitions</span>
  </div>
  
- <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase mb-4 leading-none">
- Residences <span className="text-gradient-gold">For Sale</span>
+ <h1 className="text-4xl md:text-6xl font-black text-navy tracking-tighter uppercase mb-4 leading-none">
+ Residences <span className="text-secondary-dark">For Sale</span>
  </h1>
- <p className="text-gray-400 font-medium text-lg leading-relaxed">
+ <p className="text-slate-500 font-medium text-lg leading-relaxed">
  Acquire prestigious assets across Cameroon. Secure your legacy with our verified portfolio.
  </p>
  </div>
  
- <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-md">
- <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1">Market Scope</p>
- <p className="text-white font-bold">
+ <div className="bg-slate-50 border border-border rounded-2xl px-6 py-4">
+ <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Market Scope</p>
+ <p className="text-navy font-bold">
  <span className="text-2xl text-secondary mr-2">{displayProperties.length}</span>
  Assets Found
  {getActiveFilterCount() > 0 && (
- <span className="text-gray-400 text-sm ml-2 font-normal">
+ <span className="text-slate-500 text-sm ml-2 font-normal">
  ({getActiveFilterCount()} filter{getActiveFilterCount() > 1 ? 's' : ''} applied)
  </span>
  )}

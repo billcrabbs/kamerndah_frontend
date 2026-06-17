@@ -147,7 +147,18 @@ export default function LandlordPropertiesPage() {
  <h3 className="text-3xl font-black text-white tracking-tighter uppercase line-clamp-1">{property.title}</h3>
  <div className="flex items-center text-gray-500 font-bold text-xs uppercase tracking-widest">
  <MapPin className="w-4 h-4 mr-2 text-primary" />
- {property.location?.city}, {property.location?.quarter}
+ {(() => {
+    const loc = property.location;
+    if (!loc) return property.city || 'Cameroon';
+    if (typeof loc === 'object') {
+      const parts = [];
+      if (loc.quarter) parts.push(loc.quarter);
+      if (loc.city) parts.push(loc.city);
+      if (parts.length === 0 && loc.address) parts.push(loc.address);
+      return parts.join(', ') || 'Cameroon';
+    }
+    return loc;
+  })()}
  </div>
  </div>
  <div className="flex flex-col items-end">

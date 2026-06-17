@@ -4,271 +4,320 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Search, 
-  MapPin, 
-  ShieldCheck, 
-  ArrowRight,
-  Zap,
-  Award,
-  X,
-  CheckCircle2,
-  Building2,
-  Users,
-  TrendingUp
+import {
+  Search, MapPin, ShieldCheck, ArrowRight,
+  Zap, Award, X, CheckCircle2, Building2,
+  Users, TrendingUp,
 } from 'lucide-react';
 import { useGetPropertiesQuery } from '@/store/services/propertyApi';
 import { PropertyCard } from '@/components/properties/PropertyCard';
 
+/* ─── Stat items ────────────────────────────────────────────────── */
+const quickCities = ['Douala', 'Yaoundé', 'Bonapriso', 'Bastos', 'Buea'];
+
+const features = [
+  {
+    icon: ShieldCheck,
+    title: 'Verified Listings',
+    desc: 'Every property is physically inspected by our team before going live.',
+    offset: false,
+  },
+  {
+    icon: Zap,
+    title: 'Fast Communication',
+    desc: 'Direct contact between landlords and tenants — no unnecessary delays.',
+    offset: true,
+  },
+  {
+    icon: MapPin,
+    title: 'Local Knowledge',
+    desc: 'Deep neighborhood expertise across Douala, Yaoundé, Bafoussam and more.',
+    offset: false,
+  },
+  {
+    icon: Award,
+    title: 'Secure Payments',
+    desc: 'Mobile money integrations built for Cameroonian renters and buyers.',
+    offset: true,
+  },
+];
+
+const landlordStats = [
+  { value: '500+', label: 'Active renters' },
+  { value: '48h',  label: 'Avg. first inquiry' },
+  { value: '0%',   label: 'Contact commission' },
+];
+
+/* ─────────────────────────────────────────────────────────────────── */
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  
+  const [searchQuery,    setSearchQuery]     = useState('');
+
   const { data: propertiesResult, isLoading, error, refetch } = useGetPropertiesQuery();
-  
+
   const properties = useMemo(() => {
     if (propertiesResult?.data?.data) return propertiesResult.data.data;
-    if (propertiesResult?.data) return propertiesResult.data;
-    if (Array.isArray(propertiesResult)) return propertiesResult;
+    if (propertiesResult?.data)       return propertiesResult.data;
+    if (Array.isArray(propertiesResult))  return propertiesResult;
     return [];
   }, [propertiesResult]);
 
   const filteredProperties = useMemo(() => {
-    let filtered = properties;
-    if (activeCategory !== 'all') {
-      filtered = filtered.filter(p => p.category === activeCategory);
-    }
+    let list = properties;
+    if (activeCategory !== 'all') list = list.filter(p => p.category === activeCategory);
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(p => {
-        const locationString = typeof p.location === 'object'
+      const q = searchQuery.toLowerCase();
+      list = list.filter(p => {
+        const loc = typeof p.location === 'object'
           ? `${p.location?.quarter || ''} ${p.location?.city || ''}`.toLowerCase()
           : (p.location || '').toLowerCase();
-        return locationString.includes(query) ||
-               (p.title || '').toLowerCase().includes(query) ||
-               (p.description || '').toLowerCase().includes(query) ||
-               (p.city || '').toLowerCase().includes(query);
+        return loc.includes(q)
+          || (p.title || '').toLowerCase().includes(q)
+          || (p.description || '').toLowerCase().includes(q);
       });
     }
-    return filtered;
+    return list;
   }, [properties, activeCategory, searchQuery]);
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-start justify-start pt-32 px-8 lg:px-24">
-        <div className="space-y-6 max-w-md">
-          <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center">
-            <X className="w-6 h-6 text-red-400" />
-          </div>
-          <h3 className="text-2xl font-black text-white">Connection Issue</h3>
-          <p className="text-gray-400 text-sm leading-relaxed">
-            Unable to load properties. Please check your connection and try again.
-          </p>
-          <button 
-            onClick={() => refetch()}
-            className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary-dark transition text-sm"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Count listings added in the last 7 days
+  const recentCount = useMemo(() => {
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const count = properties.filter(p => {
+      const created = p.created_at ? new Date(p.created_at).getTime() : 0;
+      return created > cutoff;
+    }).length;
+    return count > 0 ? count : null; // null = hide the badge
+  }, [properties]);
+
+  const statsData = [
+    { value: properties.length > 0 ? `${properties.length}+` : '0', label: 'Verified listings' },
+    { value: '6',    label: 'Cities covered' },
+    { value: '100%', label: 'Inspected properties' },
+    { value: '500+', label: 'Happy tenants' },
+  ];
+
+  const scrollToGrid = () =>
+    document.getElementById('properties-grid')?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="bg-white">
 
-      {/* ─── HERO ──────────────────────────────────────────────────────────── */}
-      <section className="relative pt-32 pb-0 overflow-hidden">
-        {/* Subtly animated afro-geometric pattern layered with deep background */}
-        <div className="absolute inset-0 pattern-afro opacity-20 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background to-background pointer-events-none" />
-        
-        {/* Subtle ambient glow — top-left only so it's not centered */}
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-primary/8 rounded-full blur-[120px] -translate-x-1/3 -translate-y-1/3 pointer-events-none" />
+      {/* ════════════════════════════════════════════════════════════════ */}
+      {/* HERO                                                            */}
+      {/* ════════════════════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden pt-8 pb-0 lg:pt-14 bg-white">
+        {/* Subtle afro-dot background pattern */}
+        <div className="absolute inset-0 pattern-afro pointer-events-none" />
+        {/* Bottom fade into white */}
+        <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-white to-transparent pointer-events-none" />
 
-        <div className="main-container relative z-10">
-          {/* Two-column: text left, image right — image overflows at the bottom */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_45%] gap-0 items-start">
+        <div className="container-wide relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_46%] gap-8 lg:gap-16 items-center">
 
-            {/* LEFT — copy starts at the very top, strictly left-aligned */}
+            {/* LEFT — copy */}
             <motion.div
-              initial={{ y: 30, opacity: 0 }}
+              initial={{ y: 24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="pt-6 pb-24 pr-0 lg:pr-16 space-y-8"
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+              className="py-4 lg:py-12 space-y-7"
             >
-              {/* Live badge */}
-              <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full text-primary-light text-xs font-bold uppercase tracking-wider">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+              {/* Live pill badge */}
+              <div className="inline-flex items-center gap-2 bg-primary/8 border border-primary/20 px-4 py-2 rounded-full text-primary text-[11.5px] font-bold uppercase tracking-wider">
+                <span className="relative flex h-2 w-2 flex-shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
                 </span>
-                {properties.length > 0 ? `${properties.length}+ verified listings` : 'Verified listings live'}
+                {properties.length > 0
+                  ? `${properties.length} verified listings live`
+                  : 'Verified listings live'}
               </div>
 
-              {/* Headline — no centering, just raw left-aligned power */}
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight text-white">
-                Find a home<br />
-                you'll actually<br />
+              {/* Headline */}
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-black leading-[1.06] tracking-tight text-navy">
+                Find a home<br className="hidden sm:block" />
+                you&apos;ll actually<br />
                 <span className="text-primary">love.</span>
               </h1>
 
-              <p className="text-lg text-gray-400 max-w-md leading-relaxed">
-                Verified apartments, houses, and commercial spaces across Cameroon. 
-                Browse with confidence — every listing is inspected before it goes live.
+              <p className="text-[15px] sm:text-base text-slate-500 max-w-md leading-relaxed">
+                Verified apartments, houses, and commercial spaces across Cameroon.
+                Every listing is physically inspected before it goes live.
               </p>
 
               {/* Search bar */}
-              <div className="w-full max-w-lg">
-                <div className="flex bg-[#121214] border border-white/10 rounded-2xl p-1.5 shadow-2xl focus-within:border-primary/40 transition-colors">
-                  <div className="flex-1 flex items-center px-4 gap-3">
-                    <Search className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                    <input 
-                      type="text" 
+              <div className="w-full max-w-[520px] space-y-3">
+                <div className="flex items-center bg-white border-2 border-border hover:border-primary/40 focus-within:border-primary rounded-2xl transition-colors shadow-sm overflow-hidden">
+                  <div className="flex-1 flex items-center px-4 gap-2.5">
+                    <Search className="w-4.5 h-4.5 text-slate-400 flex-shrink-0" />
+                    <input
+                      type="search"
+                      id="hero-search"
                       placeholder="City, neighborhood, property type…"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          document.getElementById('properties-grid')?.scrollIntoView({ behavior: 'smooth' });
-                        }
-                      }}
-                      className="bg-transparent text-white font-medium text-sm focus:outline-none w-full placeholder:text-gray-600"
+                      onChange={e => setSearchQuery(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') scrollToGrid(); }}
+                      className="bg-transparent text-navy font-medium text-sm focus:outline-none w-full placeholder:text-slate-400 py-3.5 min-w-0"
                     />
                     {searchQuery && (
-                      <button onClick={() => setSearchQuery('')} className="text-gray-600 hover:text-white transition p-0.5">
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="text-slate-300 hover:text-slate-500 transition p-0.5 flex-shrink-0"
+                        aria-label="Clear search"
+                      >
                         <X className="w-4 h-4" />
                       </button>
                     )}
                   </div>
-                  <button 
-                    onClick={() => document.getElementById('properties-grid')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-xl font-bold text-sm transition-colors flex-shrink-0"
+                  <button
+                    onClick={scrollToGrid}
+                    className="bg-primary hover:bg-primary-dark text-white px-5 py-3 m-1.5 rounded-xl font-bold text-sm transition-colors flex-shrink-0 whitespace-nowrap"
                   >
                     Search
                   </button>
                 </div>
 
                 {/* Quick searches */}
-                <div className="flex items-center gap-4 mt-4 text-sm text-gray-600">
-                  <span className="text-gray-700 text-xs">Try:</span>
-                  {['Douala', 'Yaoundé', 'Bonapriso', 'Bastos'].map(q => (
-                    <button 
-                      key={q} 
-                      onClick={() => {
-                        setSearchQuery(q);
-                        document.getElementById('properties-grid')?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="hover:text-primary transition-colors text-xs font-medium"
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-slate-400 text-xs font-medium">Popular:</span>
+                  {quickCities.map(city => (
+                    <button
+                      key={city}
+                      onClick={() => { setSearchQuery(city); scrollToGrid(); }}
+                      className="text-xs font-semibold text-slate-500 hover:text-primary transition-colors bg-slate-50 hover:bg-primary/8 px-3 py-1.5 rounded-lg border border-border hover:border-primary/20"
                     >
-                      {q}
+                      {city}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Inline social-proof strip — not centered, left-aligned pill row */}
-              <div className="flex flex-wrap items-center gap-6 pt-2">
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <ShieldCheck className="w-4 h-4 text-primary" />
-                  <span>100% verified listings</span>
-                </div>
-                <div className="w-px h-4 bg-white/10" />
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <MapPin className="w-4 h-4 text-primary" />
-                  <span>Douala · Yaoundé · Kribi</span>
-                </div>
-                <div className="w-px h-4 bg-white/10" />
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Users className="w-4 h-4 text-primary" />
-                  <span>500+ happy tenants</span>
-                </div>
+              {/* Trust strip */}
+              <div className="flex flex-wrap items-center gap-4 pt-1">
+                {[
+                  { icon: ShieldCheck, text: '100% verified listings' },
+                  { icon: MapPin,      text: 'Douala · Yaoundé · Kribi' },
+                  { icon: Users,       text: '500+ happy tenants' },
+                ].map(({ icon: Icon, text }, i) => (
+                  <div key={i} className={`flex items-center gap-1.5 text-sm text-slate-500 ${i > 0 ? 'hidden sm:flex' : ''}`}>
+                    {i > 0 && <span className="w-px h-4 bg-border mr-1.5" />}
+                    <Icon className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span>{text}</span>
+                  </div>
+                ))}
               </div>
             </motion.div>
 
-            {/* RIGHT — image panel, taller, bleeds off the bottom edge */}
+            {/* RIGHT — hero image */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
               className="relative hidden lg:block"
             >
-              {/* Main image — no rounded bottom so it bleeds into next section */}
-              <div className="relative h-[680px] w-full rounded-t-[2.5rem] overflow-hidden">
-                <Image 
-                  src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1400" 
+              <div className="relative h-[570px] w-full rounded-[2.5rem] overflow-hidden shadow-2xl">
+                <Image
+                  src="/hero-cameroon.svg"
                   fill
                   className="object-cover"
                   alt="Modern home in Cameroon"
                   priority
                 />
-                {/* Gradient fade at the bottom to blend into next section */}
-                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0a0a0c] to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-navy/25 via-transparent to-transparent" />
               </div>
 
-              {/* Floating card — positioned off the left edge to break symmetry */}
+              {/* Floating verified badge */}
               <motion.div
                 initial={{ x: 20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
-                className="absolute bottom-20 -left-10 bg-[#0e0e10]/95 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl flex items-center gap-4"
+                transition={{ delay: 0.75, duration: 0.45 }}
+                className="absolute bottom-10 -left-8 bg-white border border-border rounded-2xl shadow-xl p-4 flex items-center gap-3"
               >
-                <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
                   <CheckCircle2 className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-white font-bold text-sm">Verified Property</p>
-                  <p className="text-gray-500 text-xs mt-0.5">Inspected · Ready to view</p>
+                  <p className="text-navy font-bold text-sm leading-tight">Verified Property</p>
+                  <p className="text-slate-400 text-xs mt-0.5">Inspected · Ready to view</p>
                 </div>
               </motion.div>
 
-              {/* Second floating stat card, top right */}
-              <motion.div
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.5 }}
-                className="absolute top-8 right-6 bg-[#0e0e10]/95 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl"
-              >
-                <p className="text-gray-500 text-xs font-medium mb-1">New this week</p>
-                <p className="text-white font-black text-xl">+12 listings</p>
-              </motion.div>
+              {/* Floating new listings card */}
+              {recentCount !== null && (
+                <motion.div
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.95, duration: 0.45 }}
+                  className="absolute top-8 right-6 bg-white border border-border rounded-2xl shadow-xl p-4"
+                >
+                  <p className="text-slate-400 text-[11px] font-semibold mb-1 uppercase tracking-wide">New this week</p>
+                  <p className="text-navy font-black text-2xl">+{recentCount} listing{recentCount !== 1 ? 's' : ''}</p>
+                </motion.div>
+              )}
             </motion.div>
+
           </div>
         </div>
       </section>
 
-      {/* ─── PROPERTIES GRID ───────────────────────────────────────────────── */}
-      <section id="properties-grid" className="py-20 relative bg-[#0a0a0c] border-t border-white/5">
-        <div className="main-container">
+      {/* ════════════════════════════════════════════════════════════════ */}
+      {/* STATS BAR                                                       */}
+      {/* ════════════════════════════════════════════════════════════════ */}
+      <section className="bg-navy" aria-label="Key statistics">
+        <div className="container-wide py-8 lg:py-10">
+          <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-white/10">
+            {statsData.map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.07 }}
+                className={`flex flex-col items-center justify-center py-5 px-4 text-center ${
+                  i === 0 ? '' : ''
+                }`}
+              >
+                <p className="text-3xl lg:text-4xl font-black text-white">{stat.value}</p>
+                <p className="text-white/45 text-[10.5px] font-bold uppercase tracking-[0.18em] mt-1.5">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          {/* Section header — left-aligned, filter tabs float right */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+      {/* ════════════════════════════════════════════════════════════════ */}
+      {/* PROPERTIES GRID                                                 */}
+      {/* ════════════════════════════════════════════════════════════════ */}
+      <section id="properties-grid" className="bg-surface py-16 lg:py-24" aria-label="Property listings">
+        <div className="container-wide">
+
+          {/* Section header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-5 mb-10">
             <div>
-              <p className="text-primary text-xs font-bold uppercase tracking-widest mb-2">
-                {searchQuery ? `Results for "${searchQuery}"` : 'Browse listings'}
+              <p className="text-primary text-[11px] font-bold uppercase tracking-widest mb-2">
+                {searchQuery ? `Search results` : 'Browse listings'}
               </p>
-              <h2 className="text-3xl lg:text-4xl font-black text-white tracking-tight">
-                {searchQuery 
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-navy tracking-tight">
+                {searchQuery
                   ? `${filteredProperties.length} ${filteredProperties.length === 1 ? 'property' : 'properties'} found`
                   : 'Latest Properties'
                 }
               </h2>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* Filter tabs */}
+            <div className="flex items-center gap-2 flex-wrap">
               {[
-                { id: 'all', label: 'All' },
+                { id: 'all',      label: 'All' },
                 { id: 'for-rent', label: 'For Rent' },
                 { id: 'for-sale', label: 'For Sale' },
-              ].map((cat) => (
+              ].map(cat => (
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
-                    activeCategory === cat.id 
-                    ? 'bg-white text-black' 
-                    : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5'
+                  className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                    activeCategory === cat.id
+                      ? 'bg-navy text-white shadow-sm'
+                      : 'bg-white text-slate-500 hover:text-navy border border-border hover:border-slate-300'
                   }`}
                 >
                   {cat.label}
@@ -277,7 +326,7 @@ export default function HomePage() {
               {(activeCategory !== 'all' || searchQuery) && (
                 <button
                   onClick={() => { setActiveCategory('all'); setSearchQuery(''); }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-white transition-colors"
+                  className="text-sm font-medium text-slate-400 hover:text-navy transition-colors px-3 py-2.5 min-h-[44px]"
                 >
                   Clear
                 </button>
@@ -285,50 +334,66 @@ export default function HomePage() {
             </div>
           </div>
 
+          {/* Grid / States */}
           <AnimatePresence mode="wait">
             {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              /* Skeleton grid */
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="h-[400px] bg-white/[0.03] rounded-3xl animate-pulse" />
+                  <div key={i} className="h-[420px] bg-white rounded-2xl border border-border animate-pulse" />
                 ))}
               </div>
+            ) : error ? (
+              /* Error state */
+              <div className="text-center py-20 bg-white rounded-2xl border border-border max-w-md">
+                <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <X className="w-6 h-6 text-red-400" />
+                </div>
+                <h3 className="text-lg font-bold text-navy mb-2">Connection Issue</h3>
+                <p className="text-slate-400 text-sm mb-6 px-4">
+                  Unable to load properties. Please check your connection and try again.
+                </p>
+                <button onClick={() => refetch()} className="btn-primary mx-auto">
+                  Try Again
+                </button>
+              </div>
             ) : filteredProperties.length > 0 ? (
-              <motion.div 
-                key={`${activeCategory}-${searchQuery}`}
+              /* Property cards */
+              <motion.div
+                key={`grid-${activeCategory}-${searchQuery}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.4 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7"
               >
-                {filteredProperties.map((property, index) => (
-                  <motion.div 
+                {filteredProperties.map((property, idx) => (
+                  <motion.div
                     key={property.id}
-                    initial={{ y: 30, opacity: 0 }}
+                    initial={{ y: 16, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.4, delay: Math.min(idx * 0.06, 0.4), ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <PropertyCard property={property} priority={index < 3} />
+                    <PropertyCard property={property} priority={idx < 3} />
                   </motion.div>
                 ))}
               </motion.div>
             ) : (
-              <motion.div 
+              /* Empty state */
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="py-20 bg-white/[0.02] border border-white/5 rounded-3xl px-10 flex flex-col items-start space-y-6 max-w-2xl"
+                className="py-16 bg-white border border-border rounded-2xl px-8 flex flex-col items-start space-y-4 max-w-lg"
               >
-                <Search className="w-8 h-8 text-gray-700" />
+                <Search className="w-8 h-8 text-slate-300" />
                 <div>
-                  <h3 className="text-xl font-black text-white mb-2">No properties found</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">
-                    We couldn't find any listings that match your search. Try removing some filters or searching a broader area.
+                  <h3 className="text-lg font-bold text-navy mb-1">No properties found</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    We couldn&apos;t find listings matching your search. Try removing some filters or searching a broader area.
                   </p>
                 </div>
                 {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="text-white bg-white/10 hover:bg-white/20 border border-white/10 px-5 py-2.5 rounded-xl font-medium text-sm transition-colors"
-                  >
+                  <button onClick={() => setSearchQuery('')} className="btn-outline">
                     Clear Search
                   </button>
                 )}
@@ -336,14 +401,14 @@ export default function HomePage() {
             )}
           </AnimatePresence>
 
-          {/* Footer link — left aligned, not centered */}
+          {/* View all link */}
           {filteredProperties.length > 0 && (
-            <div className="mt-16 pt-8 border-t border-white/5">
-              <Link 
-                href="/rent" 
-                className="inline-flex items-center gap-2 text-white font-bold hover:text-primary transition-colors group text-sm"
+            <div className="mt-14 pt-8 border-t border-border">
+              <Link
+                href="/rent"
+                className="inline-flex items-center gap-2 text-navy font-bold hover:text-primary transition-colors group text-sm"
               >
-                <span>View all available listings</span>
+                View all available listings
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -351,71 +416,50 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── WHY KAMERNDAH ─────────────────────────────────────────────────── */}
-      <section className="py-24 border-t border-white/5">
-        <div className="main-container">
-          {/* Intentionally NOT a grid — left column is heading, right is staggered cards */}
-          <div className="flex flex-col lg:flex-row gap-16 items-start">
+      {/* ════════════════════════════════════════════════════════════════ */}
+      {/* WHY KAMERNDAH                                                   */}
+      {/* ════════════════════════════════════════════════════════════════ */}
+      <section className="bg-navy py-20 lg:py-28" aria-labelledby="why-heading">
+        <div className="container-wide">
+          <div className="flex flex-col lg:flex-row gap-14 lg:gap-20 items-start">
 
-            {/* Left — heading stays at the top, not vertically centered */}
-            <div className="lg:w-[38%] space-y-6 lg:pt-4">
-              <p className="text-primary text-xs font-bold uppercase tracking-widest">Why KamerNdah</p>
-              <h2 className="text-3xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+            {/* Left — heading */}
+            <div className="lg:w-[38%] space-y-5 lg:pt-2">
+              <p className="text-primary-light text-[11px] font-bold uppercase tracking-widest">Why KamerNdah</p>
+              <h2 id="why-heading" className="text-3xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                 The smarter way to find property in Cameroon.
               </h2>
-              <p className="text-gray-400 leading-relaxed">
-                We cut out the middleman, eliminate fake listings, and give you direct access to verified properties and landlords.
+              <p className="text-white/55 text-sm lg:text-base leading-relaxed">
+                We cut out the middleman, eliminate fake listings, and give you direct access
+                to verified properties and landlords.
               </p>
-              <Link 
-                href="/rent" 
-                className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-xl font-bold text-sm transition-colors"
+              <Link
+                href="/rent"
+                className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-3.5 rounded-xl font-bold text-sm transition-colors mt-2"
               >
                 Start browsing
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
-            {/* Right — 2x2 feature grid, staggered top offset for organic feel */}
-            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {[
-                { 
-                  icon: ShieldCheck, 
-                  title: 'Verified Listings', 
-                  desc: 'Every property is physically inspected by our team before going live.',
-                  offset: false
-                },
-                { 
-                  icon: Zap, 
-                  title: 'Fast Communication', 
-                  desc: 'Direct contact between landlords and tenants — no unnecessary delays.',
-                  offset: true
-                },
-                { 
-                  icon: MapPin, 
-                  title: 'Local Knowledge', 
-                  desc: 'Deep neighborhood expertise across Douala, Yaoundé, Bafoussam and more.',
-                  offset: false
-                },
-                {
-                  icon: Award,
-                  title: 'Secure Payments',
-                  desc: 'Mobile money integrations built for Cameroonian renters and buyers.',
-                  offset: true
-                }
-              ].map((feat, i) => (
-                <motion.div 
+            {/* Right — 2×2 feature grid */}
+            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {features.map((feat, i) => (
+                <motion.div
                   key={i}
-                  initial={{ y: 20, opacity: 0 }}
+                  initial={{ y: 16, opacity: 0 }}
                   whileInView={{ y: 0, opacity: 1 }}
-                  viewport={{ once: true, margin: '-60px' }}
-                  transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className={`space-y-4 p-6 bg-white/[0.03] border border-white/5 rounded-2xl hover:bg-white/[0.05] hover:border-white/10 transition-all ${feat.offset ? 'lg:mt-8' : ''}`}
+                  viewport={{ once: true, margin: '-50px' }}
+                  transition={{ duration: 0.45, delay: i * 0.09 }}
+                  className={`space-y-3.5 p-6 bg-white/[0.06] border border-white/10 rounded-2xl hover:bg-white/[0.09] hover:border-white/20 transition-all ${
+                    feat.offset ? 'lg:mt-6' : ''
+                  }`}
                 >
-                  <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                    <feat.icon className="w-5 h-5 text-primary" />
+                  <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+                    <feat.icon className="w-5 h-5 text-primary-light" />
                   </div>
-                  <h3 className="text-base font-bold text-white">{feat.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{feat.desc}</p>
+                  <h3 className="text-[15px] font-bold text-white">{feat.title}</h3>
+                  <p className="text-white/50 text-sm leading-relaxed">{feat.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -423,80 +467,85 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── LANDLORD CTA ──────────────────────────────────────────────────── */}
-      <section className="pb-24">
-        <div className="main-container">
-          {/* Asymmetric layout — text left, image right, no "items-center" trap */}
-          <div className="relative rounded-3xl overflow-hidden bg-[#0d1a0f] border border-primary/20">
-            {/* Background glow — left-biased */}
-            <div className="absolute top-0 left-0 w-72 h-72 bg-primary/20 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2" />
+      {/* ════════════════════════════════════════════════════════════════ */}
+      {/* LANDLORD CTA                                                    */}
+      {/* ════════════════════════════════════════════════════════════════ */}
+      <section className="bg-white py-16 lg:py-24" aria-labelledby="cta-heading">
+        <div className="container-wide">
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-primary to-primary-dark shadow-xl">
+            {/* Background glows */}
+            <div className="absolute top-0 left-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/3 pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-60 h-60 bg-white/5 rounded-full blur-2xl translate-x-1/4 translate-y-1/4 pointer-events-none" />
 
-            <div className="relative z-10 flex flex-col lg:flex-row items-stretch">
-              {/* Left — content block */}
-              <div className="flex-1 p-10 lg:p-16 space-y-6">
-                <p className="text-primary text-xs font-bold uppercase tracking-widest">For Landlords & Agents</p>
-                <h2 className="text-3xl lg:text-4xl font-black text-white tracking-tight">
-                  List your property.<br />
-                  Reach real tenants.
+            <div className="relative z-10 flex flex-col lg:flex-row">
+
+              {/* Content */}
+              <div className="flex-1 p-8 sm:p-10 lg:p-14 xl:p-16 space-y-6">
+                <p className="text-white/65 text-[11px] font-bold uppercase tracking-widest">
+                  For Landlords &amp; Agents
+                </p>
+                <h2 id="cta-heading" className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+                  List your property.<br />Reach real tenants.
                 </h2>
-                <p className="text-gray-400 leading-relaxed max-w-md">
-                  Thousands of verified renters browse KamerNdah every week. Get your listing in front of the right people — fast, securely, and with zero commission on first contact.
+                <p className="text-white/65 leading-relaxed max-w-md text-sm lg:text-base">
+                  Thousands of verified renters browse KamerNdah every week. Get your listing in front
+                  of the right people — fast, securely, and with zero commission on first contact.
                 </p>
 
-                {/* Stats row — left aligned */}
-                <div className="flex flex-wrap gap-8 py-4 border-y border-white/5">
-                  {[
-                    { value: '500+', label: 'Active renters' },
-                    { value: '48h', label: 'Avg. first inquiry' },
-                    { value: '0%', label: 'Contact commission' },
-                  ].map((stat, i) => (
+                {/* Mini stats */}
+                <div className="flex flex-wrap gap-7 py-5 border-y border-white/20">
+                  {landlordStats.map((s, i) => (
                     <div key={i}>
-                      <p className="text-2xl font-black text-white">{stat.value}</p>
-                      <p className="text-gray-500 text-xs font-medium mt-0.5">{stat.label}</p>
+                      <p className="text-2xl font-black text-white">{s.value}</p>
+                      <p className="text-white/50 text-[11px] font-semibold mt-0.5">{s.label}</p>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex flex-wrap gap-4">
-                  <Link 
-                    href="/submit-property" 
-                    className="bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-xl font-bold transition-colors text-sm"
+                {/* CTAs */}
+                <div className="flex flex-wrap gap-3 pt-1">
+                  <Link
+                    href="/submit-property"
+                    className="inline-flex items-center gap-2 bg-white hover:bg-white/90 text-primary px-7 py-3.5 rounded-xl font-black text-sm transition-all hover:shadow-lg"
                   >
+                    <Building2 className="w-4 h-4" />
                     List Your Property
                   </Link>
-                  <Link 
-                    href="/register" 
-                    className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-8 py-4 rounded-xl font-bold transition-colors text-sm"
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 border border-white/30 text-white px-7 py-3.5 rounded-xl font-bold text-sm transition-all"
                   >
                     Create Free Account
                   </Link>
                 </div>
               </div>
 
-              {/* Right — decorative panel with a light image */}
-              <div className="hidden lg:block w-80 xl:w-96 relative overflow-hidden">
-                <Image 
-                  src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=800"
+              {/* Decorative image panel */}
+              <div className="hidden lg:block w-72 xl:w-88 relative overflow-hidden flex-shrink-0">
+                <Image
+                  src="/hero-cameroon.svg"
                   fill
-                  className="object-cover opacity-30"
+                  className="object-cover opacity-25"
                   alt="Apartment building"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0d1a0f] to-transparent" />
-                {/* Floating mini-card */}
-                <div className="absolute bottom-10 left-6 bg-[#0e0e10]/90 backdrop-blur border border-white/10 p-4 rounded-xl">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-transparent" />
+                {/* Floating mini listing card */}
+                <div className="absolute bottom-10 left-5 bg-white/15 backdrop-blur border border-white/25 p-4 rounded-xl">
                   <div className="flex items-center gap-3">
-                    <Building2 className="w-5 h-5 text-primary" />
+                    <Building2 className="w-5 h-5 text-white flex-shrink-0" />
                     <div>
-                      <p className="text-white text-xs font-bold">New listing live</p>
-                      <p className="text-gray-500 text-[10px]">Bonapriso · 3 bed · 180k XAF</p>
+                      <p className="text-white text-xs font-bold leading-tight">New listing live</p>
+                      <p className="text-white/55 text-[10px] mt-0.5">Bonapriso · 3 bed · 180k XAF</p>
                     </div>
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
       </section>
+
     </div>
   );
 }
