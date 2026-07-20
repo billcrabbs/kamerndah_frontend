@@ -3,42 +3,58 @@ import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
 export function StepIndicator({ currentStep, totalSteps, steps }) {
- return (
- <div className="flex items-center justify-between relative mb-12">
- <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white/5 -translate-y-1/2" />
- 
- {steps.map((step, i) => {
- const stepNumber = i + 1;
- const isCompleted = currentStep > stepNumber;
- const isActive = currentStep === stepNumber;
+  return (
+    <div className="flex items-start overflow-x-auto pb-4 gap-0 no-scrollbar -mx-1 px-1">
+      {steps.map((step, i) => {
+        const stepNumber = i + 1;
+        const isCompleted = currentStep > stepNumber;
+        const isActive = currentStep === stepNumber;
+        const isNearby = Math.abs(currentStep - stepNumber) <= 1;
 
- return (
- <div key={i} className="relative z-10 flex flex-col items-center group">
- <motion.div
- animate={{
- scale: isActive ? 1.2 : 1,
- backgroundColor: isCompleted ? '#00cf82' : isActive ? '#fff' : '#0c0c0e',
- borderColor: isCompleted || isActive ? 'transparent' : 'rgba(255,255,255,0.1)'
- }}
- className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-500`}
- >
- {isCompleted ? (
- <Check className="w-5 h-5 text-black font-black" />
- ) : (
- <span className={`text-xs font-black ${isActive ? 'text-black' : 'text-gray-500'}`}>
- 0{stepNumber}
- </span>
- )}
- </motion.div>
- 
- <div className="absolute top-14 whitespace-nowrap text-center">
- <p className={`text-[9px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${isActive ? 'text-white' : 'text-gray-600'}`}>
- {step}
- </p>
- </div>
- </div>
- );
- })}
- </div>
- );
+        return (
+          <div key={i} className="flex items-start min-w-0">
+            <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+              <motion.div
+                animate={{ scale: isActive ? 1.1 : 1 }}
+                className={`w-7 h-7 md:w-9 md:h-9 rounded-full border-2 flex items-center justify-center transition-all duration-500 flex-shrink-0 ${
+                  isCompleted || isActive
+                    ? 'bg-primary border-primary'
+                    : 'bg-white border-gray-200'
+                }`}
+              >
+                {isCompleted ? (
+                  <Check className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+                ) : (
+                  <span
+                    className={`text-[10px] md:text-xs font-bold ${
+                      isActive ? 'text-white' : 'text-gray-400'
+                    }`}
+                  >
+                    {stepNumber}
+                  </span>
+                )}
+              </motion.div>
+              <span
+                className={`text-center transition-colors leading-tight ${
+                  isActive || isCompleted ? 'text-primary' : 'text-gray-400'
+                } ${isNearby ? 'block' : 'hidden md:block'} text-[7px] md:text-[9px] font-bold uppercase tracking-wider max-w-[60px] md:max-w-none`}
+              >
+                {step}
+              </span>
+            </div>
+
+            {i < steps.length - 1 && (
+              <div className="w-4 md:w-8 h-px mt-3.5 md:mt-4 mx-0.5 md:mx-1.5 flex-shrink-0">
+                <div
+                  className={`h-full transition-all duration-500 ${
+                    isCompleted ? 'bg-primary' : 'bg-gray-200'
+                  }`}
+                />
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
 }

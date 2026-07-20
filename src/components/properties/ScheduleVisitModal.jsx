@@ -116,7 +116,7 @@ export function ScheduleVisitModal({ isOpen, onClose, property }) {
               <div className="space-y-3">
                 <h2 className="text-3xl font-black text-white tracking-tighter uppercase">Visit Scheduled</h2>
                 <p className="text-gray-400 text-sm leading-relaxed">
-                  Your visit request for <span className="text-white font-bold">{property.title}</span> has been submitted. We'll confirm the details shortly.
+                  Your visit request for <span className="text-white font-bold">{property.title}</span> has been submitted. We&apos;ll confirm the details shortly.
                 </p>
               </div>
               <button
