@@ -1,103 +1,91 @@
 'use client';
 import { motion } from 'framer-motion';
-import { 
- Building2, 
- TrendingUp, 
- ShieldCheck, 
- ArrowRight,
- Sparkles,
- Zap
-} from 'lucide-react';
+import { Building2, TrendingUp, ShieldCheck, ArrowRight, Zap } from 'lucide-react';
 import Link from 'next/link';
 
 export function LandlordOnboarding() {
- return (
- <motion.div
- initial={{ opacity: 0, y: 20 }}
- animate={{ opacity: 1, y: 0 }}
- className="relative overflow-hidden group bg-[#0c0c0e] border border-white/5 rounded-[3rem] p-10 md:p-14"
- >
- {/* Background Gloss */}
- <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/10 transition-colors" />
- 
- <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
- <div className="space-y-8">
- <div className="inline-flex items-center space-x-3 bg-amber-500/10 border border-amber-500/20 px-5 py-2.5 rounded-full">
- <Sparkles className="w-4 h-4 text-amber-500" />
- <span className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500">Elite Partnership</span>
- </div>
- 
- <div className="space-y-4">
- <h2 className="text-4xl md:text-5xl font-black text-white leading-tight tracking-tighter uppercase ">
- Evolve into a <br />
- <span className="text-gradient-gold">Property Tycoon.</span>
- </h2>
- <p className="text-gray-500 text-sm font-medium leading-relaxed max-w-md">
- Stop simply visiting and start commanding. Join our network of verified landlords to list your assets, automate tenant audits, and secure high-value agreements.
- </p>
- </div>
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-[#0c0c0e] border border-white/[0.04] rounded-2xl p-6 md:p-8 relative overflow-hidden"
+    >
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/[0.04] rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
- <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-4">
- {[
- { icon: TrendingUp, label: 'Asset Analytics', desc: 'Track view velocity and high-intent saves.' },
- { icon: ShieldCheck, label: 'Legal Safeguards', desc: 'Verified booking deposits for every deal.' },
- ].map((item, i) => (
- <div key={i} className="space-y-3">
- <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/5">
- <item.icon className="w-5 h-5 text-primary-light" />
- </div>
- <div>
- <p className="text-[11px] font-black uppercase tracking-widest text-white">{item.label}</p>
- <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest leading-relaxed mt-1">{item.desc}</p>
- </div>
- </div>
- ))}
- </div>
+      <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div className="space-y-5">
+          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-4 py-1.5 rounded-full">
+            <Zap className="w-3.5 h-3.5 text-amber-400" />
+            <span className="text-[10px] font-bold text-amber-400 tracking-wider uppercase">Partnership</span>
+          </div>
 
- <Link 
- href="/dashboard/profile"
- className="inline-flex items-center space-x-4 bg-white text-black px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest text-xs transition-all hover:scale-105 emerald-glow-light"
- >
- <span>Begin Onboarding</span>
- <ArrowRight className="w-4 h-4" />
- </Link>
- </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-tight">
+              Become a <span className="text-primary">Landlord.</span>
+            </h2>
+            <p className="text-sm text-white/40 mt-2 max-w-md leading-relaxed">
+              List your assets, automate tenant audits, and secure high-value agreements.
+            </p>
+          </div>
 
- <div className="relative hidden lg:block">
- <div className="aspect-square bg-gradient-to-br from-white/5 to-transparent rounded-[4rem] border border-white/10 flex items-center justify-center relative overflow-hidden">
- <Building2 className="w-32 h-32 text-gray-800 opacity-20" />
- 
- {/* Floating Badges */}
- <motion.div 
- animate={{ y: [0, -10, 0] }}
- transition={{ duration: 4, repeat: Infinity }}
- className="absolute top-12 left-12 bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-3xl"
- >
- <div className="flex items-center space-x-3">
- <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
- <Zap className="w-4 h-4 text-white" />
- </div>
- <div>
- <p className="text-[8px] font-black text-white uppercase tracking-widest">Active Verification</p>
- <p className="text-[10px] font-black text-emerald-500 uppercase tracking-tighter ">Secured Asset</p>
- </div>
- </div>
- </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { icon: TrendingUp, label: 'Asset Analytics', desc: 'Track views and saves.' },
+              { icon: ShieldCheck, label: 'Legal Safeguards', desc: 'Verified booking deposits.' },
+            ].map((item, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-white/[0.04] rounded-lg flex items-center justify-center border border-white/[0.04] flex-shrink-0 mt-0.5">
+                  <item.icon className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white">{item.label}</p>
+                  <p className="text-[10px] text-white/30 mt-0.5">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
 
- <motion.div 
- animate={{ y: [0, 10, 0] }}
- transition={{ duration: 5, repeat: Infinity, delay: 1 }}
- className="absolute bottom-12 right-12 bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-3xl"
- >
- <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-2">Portfolio Growth</p>
- <div className="flex items-baseline space-x-2">
- <p className="text-2xl font-black text-white tracking-tighter uppercase">+128%</p>
- <TrendingUp className="w-3 h-3 text-emerald-500" />
- </div>
- </motion.div>
- </div>
- </div>
- </div>
- </motion.div>
- );
+          <Link
+            href="/dashboard/profile"
+            className="inline-flex items-center gap-2 bg-white/[0.08] hover:bg-white/[0.12] text-white px-6 py-3 rounded-xl text-xs font-bold tracking-wider transition-all"
+          >
+            <span>Upgrade Now</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="relative hidden lg:block">
+          <div className="aspect-square bg-gradient-to-br from-white/[0.03] to-transparent rounded-2xl border border-white/[0.06] flex items-center justify-center relative overflow-hidden">
+            <Building2 className="w-24 h-24 text-white/[0.06]" />
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 4, repeat: Infinity }}
+              className="absolute top-8 left-8 bg-white/[0.04] backdrop-blur border border-white/[0.06] p-4 rounded-xl"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                  <Zap className="w-3.5 h-3.5 text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-[8px] font-bold text-white/50 tracking-wider">Verification</p>
+                  <p className="text-[10px] font-bold text-emerald-400">Secured</p>
+                </div>
+              </div>
+            </motion.div>
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 5, repeat: Infinity, delay: 1 }}
+              className="absolute bottom-8 right-8 bg-white/[0.04] backdrop-blur border border-white/[0.06] p-4 rounded-xl"
+            >
+              <p className="text-[8px] font-bold text-white/40 tracking-wider mb-1">Growth</p>
+              <div className="flex items-baseline gap-1">
+                <p className="text-lg font-bold text-white">+128%</p>
+                <TrendingUp className="w-3 h-3 text-emerald-400" />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
 }

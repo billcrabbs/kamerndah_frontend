@@ -104,79 +104,65 @@ export default function LocationMap({ position, onPositionChange }) {
  }
  };
 
- if (!isMounted) {
- return (
- <div className="w-full h-full bg-white/5 animate-pulse rounded-[3rem] border border-white/5 flex items-center justify-center">
- <span className="text-gray-500 text-xs font-black uppercase tracking-widest">Loading Map...</span>
- </div>
- );
- }
+  if (!isMounted) {
+    return (
+      <div className="w-full h-full bg-gray-100 animate-pulse rounded-xl border border-gray-200 flex items-center justify-center">
+        <span className="text-gray-500 text-xs font-bold uppercase tracking-wider">Loading Map...</span>
+      </div>
+    );
+  }
 
- return (
- <div className="w-full h-full rounded-[3rem] overflow-hidden border border-white/10 relative z-0 flex flex-col">
- {/* Search Overlay */}
- <div className="absolute top-4 left-4 right-4 z-[400]">
- <form onSubmit={handleSearch} className="flex items-center space-x-2">
- <div className="relative flex-1">
- <input 
- type="text" 
- value={searchQuery}
- onChange={(e) => setSearchQuery(e.target.value)}
- placeholder="Search city, neighborhood, or street..."
- className="w-full bg-background/90 backdrop-blur-md border border-white/10 rounded-2xl py-3 pl-4 pr-10 text-xs font-bold text-white uppercase tracking-widest focus:outline-none focus:border-primary/50 transition-all placeholder:text-gray-500 shadow-xl"
- />
+  return (
+    <div className="w-full h-full rounded-xl overflow-hidden border border-gray-200 relative z-0 flex flex-col">
+      {/* Search Overlay */}
+      <div className="absolute top-3 left-3 right-3 z-[400]">
+        <form onSubmit={handleSearch} className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <input 
+              type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search location..."
+              className="w-full bg-white/95 backdrop-blur-md border border-gray-200 rounded-lg py-2.5 pl-3.5 pr-9 text-xs font-bold text-gray-900 focus:outline-none focus:border-primary/50 transition-all placeholder:text-gray-400 shadow-md"
+            />
  {isSearching && (
  <Loader2 className="w-4 h-4 text-primary absolute right-3 top-1/2 -translate-y-1/2 animate-spin" />
  )}
  </div>
- <button 
- type="submit"
- disabled={isSearching}
- className="bg-primary text-white p-3 rounded-2xl hover:bg-primary-light transition-colors shadow-xl disabled:opacity-50"
- >
- <Search className="w-4 h-4" />
- </button>
- </form>
- </div>
+          <button
+            type="submit"
+            disabled={isSearching}
+            className="bg-primary text-white p-2.5 rounded-lg hover:bg-primary-dark transition-colors shadow-md disabled:opacity-50 flex-shrink-0"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+        </form>
+      </div>
 
- <MapContainer 
- center={currentCenter} 
- zoom={13} 
- scrollWheelZoom={true} 
- className="w-full h-full min-h-[300px] z-0"
- >
- <TileLayer
- attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
- url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
- className="map-tiles-dark" 
- />
- 
- {position && position.lat && position.lng && (
- <Marker 
- position={[parseFloat(position.lat), parseFloat(position.lng)]}
- icon={customMarkerIcon}
- />
- )}
- 
- <MapClickHandler onLocationSelect={(pos) => {
- onPositionChange(pos);
- setMapCenter([pos.lat, pos.lng]);
- }} />
- <MapFlyTo center={mapCenter} />
- </MapContainer>
-
- {/* Overlay to enforce glassmorphic/dark theme aesthetics slightly */}
- <style jsx global>{`
- .leaflet-container {
- background: #0c0c0e;
- }
- .leaflet-layer,
- .leaflet-control-zoom-in,
- .leaflet-control-zoom-out,
- .leaflet-control-attribution {
- filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
- }
- `}</style>
- </div>
- );
+      <MapContainer
+        center={currentCenter}
+        zoom={13}
+        scrollWheelZoom={true}
+        className="w-full h-full min-h-[300px] z-0 rounded-xl"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {position && position.lat && position.lng && (
+          <Marker
+            position={[parseFloat(position.lat), parseFloat(position.lng)]}
+            icon={customMarkerIcon}
+          />
+        )}
+        <MapClickHandler
+          onLocationSelect={(pos) => {
+            onPositionChange(pos);
+            setMapCenter([pos.lat, pos.lng]);
+          }}
+        />
+        <MapFlyTo center={mapCenter} />
+      </MapContainer>
+    </div>
+  );
 }

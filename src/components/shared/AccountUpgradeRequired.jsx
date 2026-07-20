@@ -3,37 +3,35 @@ import { motion } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
-export function AccountUpgradeRequired({ 
-  title = "Account Upgrade Required", 
-  message = "Only registered Elite Landlords can access this feature.",
-  buttonText = "Upgrade Account",
-  buttonHref = "/dashboard/profile"
+export function AccountUpgradeRequired({
+  title = 'Access Required',
+  message = 'Only registered landlords can access this feature.',
+  buttonText = 'Upgrade Account',
+  buttonHref = '/dashboard/profile',
 }) {
   return (
     <div className="flex items-center justify-center p-8 w-full">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="max-w-xl w-full bg-[#0c0c0e] border border-white/5 rounded-[3rem] p-12 text-center space-y-8 premium-shadow"
+        className="max-w-md w-full bg-[#0c0c0e] border border-white/[0.04] rounded-2xl p-10 text-center space-y-6"
       >
-        <div className="w-24 h-24 bg-amber-500/10 rounded-[2rem] flex items-center justify-center mx-auto border border-amber-500/20">
-          <ShieldCheck className="w-10 h-10 text-amber-500" />
+        <div className="w-16 h-16 bg-amber-500/10 rounded-xl flex items-center justify-center mx-auto border border-amber-500/20">
+          <ShieldCheck className="w-7 h-7 text-amber-400" />
         </div>
-        <div className="space-y-4">
-          <h2 className="text-3xl font-black text-white tracking-tighter uppercase">{title}</h2>
-          <p className="text-gray-500 text-sm font-medium leading-relaxed">
-            {message}
-          </p>
+        <div className="space-y-2">
+          <h2 className="text-lg font-bold text-white">{title}</h2>
+          <p className="text-sm text-white/40 leading-relaxed">{message}</p>
         </div>
-        <div className="flex flex-col space-y-4">
-          <Link 
+        <div className="flex flex-col gap-3">
+          <Link
             href={buttonHref}
-            className="block w-full bg-white text-black py-6 rounded-[2rem] font-black uppercase tracking-widest text-xs emerald-glow-light transition-all hover:scale-105"
+            className="block w-full bg-primary hover:bg-primary-dark text-white py-3.5 rounded-xl font-bold text-xs tracking-wider transition-all"
           >
             {buttonText}
           </Link>
-          <Link href="/" className="block text-[10px] font-black uppercase tracking-widest text-gray-700 hover:text-white transition-colors">
-            Return to Home
+          <Link href="/" className="block text-[10px] font-bold text-white/30 hover:text-white transition-colors">
+            Back to Home
           </Link>
         </div>
       </motion.div>
